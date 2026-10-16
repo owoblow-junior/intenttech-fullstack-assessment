@@ -499,6 +499,34 @@ function Wizard({ existing }: { existing?: Profile }) {
       notice('Please correct the highlighted fields before submitting.', true);
     },
   );
+  function fillSample() {
+    if (form.formState.isDirty && !window.confirm('Replace the current form with fictional sample details?')) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 240;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#658783';
+    ctx.fillRect(0, 0, 240, 240);
+    ctx.fillStyle = '#ece2d3';
+    ctx.beginPath();
+    ctx.arc(120, 85, 42, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(120, 220, 85, 80, 0, 0, Math.PI * 2);
+    ctx.fill();
+    const sample: ProfileInput = {
+      userInfo: { profilePhoto: canvas.toDataURL('image/jpeg', 0.9), firstName: 'Ada', lastName: 'Okafor', dob: '1993-06-15', occupation: 'Product Designer', gender: 'Female' },
+      userContact: { email: `ada.demo.${crypto.randomUUID().slice(0, 8)}@example.com`, phoneNumber: '+234 803 555 0100', fax: '+234 1 555 0101', linkedInUrl: 'https://www.linkedin.com/in/ada-example' },
+      userAddress: { address: '12 Example Avenue', city: 'Lagos', state: 'Lagos', country: 'Nigeria', zipCode: '100001' },
+      userAcademics: { schools: [
+        { schoolName: 'University of Lagos', qualification: 'Bachelor of Science', fieldOfStudy: 'Industrial Design', startDate: '2011-09-01', endDate: '2015-06-30' },
+        { schoolName: 'Example College', qualification: 'Senior School Certificate', fieldOfStudy: 'General Studies', startDate: '2005-09-01', endDate: '2011-06-30' },
+      ] },
+    };
+    form.reset(sample, { keepDefaultValues: true });
+    go(0);
+    notice('Fictional sample details filled. Review each step and submit when ready.');
+  }
   function cancel() {
     if (!form.formState.isDirty || window.confirm('Discard your unsaved profile changes?'))
       navigate(existing ? `/users/${existing.id}` : '/users');
@@ -523,6 +551,14 @@ function Wizard({ existing }: { existing?: Profile }) {
         </div>
         <span className="step-count">Step {step + 1} of 6</span>
       </div>
+      {!existing && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <button type="button" className="btn btn-secondary" onClick={fillSample} disabled={busy}>
+            Fill sample details
+          </button>
+          <p className="field-hint">Use fictional demo data, including a sample photo. Nothing is saved until you create the profile.</p>
+        </div>
+      )}
       <div className="wizard-layout">
         <aside className="wizard-steps" aria-label="Profile creation steps">
           <ol>
