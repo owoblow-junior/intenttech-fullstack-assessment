@@ -1,0 +1,359 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Profile created"
+          },
+          "409": {
+            "description": "Duplicate email"
+          }
+        },
+        "summary": "Create a complete profile in one PostgreSQL transaction",
+        "tags": [
+          "Users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_all",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "List profiles with all related records",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "operationId": "UsersController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Profile not found"
+          }
+        },
+        "summary": "Get one complete profile",
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Replace a complete profile atomically, including schools",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "summary": "Delete a profile and cascade its related records",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}/pdf": {
+      "get": {
+        "operationId": "UsersController_pdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Download a complete résumé as PDF",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}/docx": {
+      "get": {
+        "operationId": "UsersController_docx",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Download a complete editable résumé as DOCX",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "IntentTech Profiles API",
+    "description": "Five CRUD endpoints. POST and PUT each accept four nested objects and write all records in one PostgreSQL transaction. PDF and editable DOCX exports are available separately. Use fictional data in this assessment demo.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "UserInfoDto": {
+        "type": "object",
+        "properties": {
+          "profilePhoto": {
+            "type": "string",
+            "description": "JPEG/PNG base64 data URL, at most 2 MiB decoded"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Ada"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Okafor"
+          },
+          "dob": {
+            "type": "string",
+            "example": "1995-06-15"
+          },
+          "occupation": {
+            "type": "string",
+            "example": "Product Designer"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "Female",
+              "Male",
+              "Non-binary",
+              "Prefer not to say"
+            ]
+          }
+        },
+        "required": [
+          "profilePhoto",
+          "firstName",
+          "lastName",
+          "dob",
+          "occupation",
+          "gender"
+        ]
+      },
+      "UserContactDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "ada@example.com"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+234 803 555 0101"
+          },
+          "fax": {
+            "type": "string"
+          },
+          "linkedInUrl": {
+            "type": "string",
+            "example": "https://www.linkedin.com/in/ada-example"
+          }
+        },
+        "required": [
+          "email",
+          "phoneNumber"
+        ]
+      },
+      "UserAddressDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "zipCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "address",
+          "city",
+          "state",
+          "country",
+          "zipCode"
+        ]
+      },
+      "SchoolDto": {
+        "type": "object",
+        "properties": {
+          "schoolName": {
+            "type": "string"
+          },
+          "qualification": {
+            "type": "string"
+          },
+          "fieldOfStudy": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2014-09-01"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Omit for ongoing studies",
+            "example": "2018-06-30"
+          }
+        },
+        "required": [
+          "schoolName",
+          "qualification",
+          "fieldOfStudy",
+          "startDate"
+        ]
+      },
+      "UserAcademicsDto": {
+        "type": "object",
+        "properties": {
+          "schools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SchoolDto"
+            }
+          }
+        },
+        "required": [
+          "schools"
+        ]
+      },
+      "SaveUserDto": {
+        "type": "object",
+        "properties": {
+          "userInfo": {
+            "$ref": "#/components/schemas/UserInfoDto"
+          },
+          "userContact": {
+            "$ref": "#/components/schemas/UserContactDto"
+          },
+          "userAddress": {
+            "$ref": "#/components/schemas/UserAddressDto"
+          },
+          "userAcademics": {
+            "$ref": "#/components/schemas/UserAcademicsDto"
+          }
+        },
+        "required": [
+          "userInfo",
+          "userContact",
+          "userAddress",
+          "userAcademics"
+        ]
+      }
+    }
+  }
+}

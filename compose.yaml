@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: intenttech
+      POSTGRES_PASSWORD: intenttech
+      POSTGRES_DB: intenttech
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: ["profiles_db:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U intenttech -d intenttech"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://intenttech:intenttech@db:5432/intenttech
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      PORT: 3000
+    ports: ["3000:3000"]
+    depends_on:
+      db: {condition: service_healthy}
+volumes:
+  profiles_db:

@@ -1,0 +1,30 @@
+{
+  "name": "intenttech-fullstack-assessment",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:db": "node scripts/dev-database.mjs",
+    "build": "npm run build -w server && npm run build -w client",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "test": "npm run build -w server && npm run test -w server",
+    "test:embedded": "npm run build -w server && USE_EMBEDDED_TEST_DATABASE=true npm run test -w server",
+    "test:browser": "npm run build -w server && node scripts/browser-tests.mjs",
+    "seed": "npm run seed -w server"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@electric-sql/pglite-socket": "^0.2.11",
+    "@playwright/test": "^1.55.0",
+    "@sparticuz/chromium": "^153.0.0",
+    "concurrently": "^9.2.1",
+    "tar-fs": "^3.1.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
